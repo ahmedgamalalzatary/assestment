@@ -23,19 +23,51 @@ export default function SearchBar() {
     <TextField
       fullWidth
       size="small"
-      placeholder="Search tasks by title or description…"
+      placeholder="Search tasks…"
       value={localValue}
       onChange={(e) => setLocalValue(e.target.value)}
       slotProps={{
         input: {
           startAdornment: (
             <InputAdornment position="start">
-              <SearchIcon />
+              <SearchIcon sx={{ color: "text.secondary", fontSize: 20 }} />
             </InputAdornment>
           ),
         },
       }}
-      sx={{ maxWidth: 500 }}
+      sx={{
+        maxWidth: { xs: "100%", sm: 420 },
+        width: "100%",
+        "& .MuiOutlinedInput-root": {
+          bgcolor: "rgba(255, 255, 255, 0.04)",
+          borderRadius: "12px",
+          fontSize: "0.875rem",
+          transition: "all 0.25s cubic-bezier(0.22, 1, 0.36, 1)",
+          "& fieldset": {
+            borderColor: "rgba(255, 255, 255, 0.06)",
+          },
+          "&:hover": {
+            bgcolor: "rgba(255, 255, 255, 0.06)",
+            "& fieldset": {
+              borderColor: "rgba(255, 255, 255, 0.12)",
+            },
+          },
+          "&.Mui-focused": {
+            bgcolor: "rgba(255, 255, 255, 0.06)",
+            boxShadow: "0 0 0 3px rgba(129, 140, 248, 0.12)",
+            "& fieldset": {
+              borderColor: "#818cf8 !important",
+              borderWidth: "1.5px !important",
+            },
+          },
+        },
+        "& .MuiOutlinedInput-input": {
+          "&::placeholder": {
+            color: "#64748b",
+            opacity: 1,
+          },
+        },
+      }}
     />
   );
 }

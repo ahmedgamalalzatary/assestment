@@ -55,7 +55,6 @@ export default function KanbanColumn({
     if (!el || !hasMore) return;
 
     const { scrollTop, scrollHeight, clientHeight } = el;
-    // Load more when user scrolls near the bottom (within 50px)
     if (scrollHeight - scrollTop - clientHeight < 50) {
       loadMoreForColumn(config.id);
     }
@@ -64,48 +63,114 @@ export default function KanbanColumn({
   return (
     <Paper
       elevation={0}
+      className="kanban-column-animate"
       sx={{
-        flex: 1,
-        minWidth: 280,
-        maxWidth: 360,
+        flex: { xs: "none", md: 1 },
+        width: { xs: "100%", md: "auto" },
+        minWidth: { xs: "auto", md: 280, lg: 300 },
+        maxWidth: { xs: "100%", sm: "100%", md: 380 },
         display: "flex",
         flexDirection: "column",
-        bgcolor: isOver ? "action.hover" : "grey.50",
-        borderRadius: 2,
-        transition: "background-color 0.2s",
-        border: isOver ? "2px dashed" : "2px solid transparent",
-        borderColor: isOver ? config.color : "transparent",
+        bgcolor: isOver ? "rgba(255, 255, 255, 0.06)" : "rgba(255, 255, 255, 0.025)",
+        borderRadius: { xs: "14px", sm: "18px" },
+        transition: "all 0.3s cubic-bezier(0.22, 1, 0.36, 1)",
+        border: "1px solid",
+        borderColor: isOver
+          ? `${config.color}44`
+          : "rgba(255, 255, 255, 0.06)",
+        backdropFilter: "blur(12px)",
+        overflow: "hidden",
+        position: "relative",
+        "&:hover": {
+          borderColor: "rgba(255, 255, 255, 0.1)",
+          bgcolor: "rgba(255, 255, 255, 0.03)",
+        },
+        // Top glow line
+        "&::before": {
+          content: '""',
+          position: "absolute",
+          top: 0,
+          left: "20%",
+          right: "20%",
+          height: "2px",
+          background: `linear-gradient(90deg, transparent, ${config.color}88, transparent)`,
+          borderRadius: "0 0 4px 4px",
+        },
       }}
     >
       {/* Column header */}
       <Box
         sx={{
-          p: 2,
-          pb: 1,
+          px: { xs: 1.5, sm: 2.5 },
+          pt: { xs: 2, sm: 2.5 },
+          pb: { xs: 1, sm: 1.5 },
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
         }}
       >
-        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+          {/* Glowing status dot */}
           <Box
             sx={{
-              width: 12,
-              height: 12,
+              width: 10,
+              height: 10,
               borderRadius: "50%",
               bgcolor: config.color,
+              boxShadow: `0 0 8px ${config.color}66, 0 0 16px ${config.color}33`,
+              flexShrink: 0,
             }}
           />
-          <Typography variant="subtitle1" fontWeight={700}>
+          <Typography
+            variant="subtitle1"
+            sx={{
+              fontFamily: "'Outfit', sans-serif",
+              fontWeight: 700,
+              fontSize: "0.95rem",
+              letterSpacing: "-0.01em",
+              color: "#f1f5f9",
+            }}
+          >
             {config.title}
           </Typography>
-          <Chip label={tasks.length} size="small" variant="outlined" />
+          <Chip
+            label={tasks.length}
+            size="small"
+            sx={{
+              height: 22,
+              minWidth: 28,
+              fontSize: "0.7rem",
+              fontWeight: 700,
+              bgcolor: `${config.color}18`,
+              color: config.color,
+              border: `1px solid ${config.color}30`,
+              "& .MuiChip-label": {
+                px: 1,
+              },
+            }}
+          />
         </Box>
         <Button
           size="small"
-          startIcon={<AddIcon />}
           onClick={onAddClick}
-          sx={{ minWidth: "auto" }}
+          sx={{
+            minWidth: "auto",
+            px: 1.5,
+            py: 0.5,
+            fontSize: "0.78rem",
+            color: "text.secondary",
+            borderRadius: "10px",
+            border: "1px solid rgba(255, 255, 255, 0.06)",
+            bgcolor: "rgba(255, 255, 255, 0.03)",
+            transition: "all 0.2s cubic-bezier(0.22, 1, 0.36, 1)",
+            "&:hover": {
+              bgcolor: `${config.color}15`,
+              borderColor: `${config.color}40`,
+              color: config.color,
+              transform: "translateY(-1px)",
+            },
+          }}
+          startIcon={<AddIcon sx={{ fontSize: "16px !important" }} />}
         >
           Add
         </Button>
@@ -114,7 +179,6 @@ export default function KanbanColumn({
       {/* Scrollable task list */}
       <Box
         ref={(node: HTMLDivElement | null) => {
-          // Combine refs: droppable ref + scroll ref
           setNodeRef(node);
           (scrollRef as React.MutableRefObject<HTMLDivElement | null>).current = node;
         }}
@@ -122,23 +186,29 @@ export default function KanbanColumn({
         sx={{
           flex: 1,
           overflowY: "auto",
-          p: 1.5,
+          px: { xs: 1, sm: 1.5 },
+          pb: 1.5,
           pt: 0.5,
-          minHeight: 200,
-          maxHeight: "calc(100vh - 240px)",
+          minHeight: { xs: 120, md: 200 },
+          maxHeight: { xs: "50vh", sm: "60vh", md: "calc(100vh - 220px)" },
         }}
       >
         <SortableContext
           items={visibleTasks.map((t) => t.id)}
           strategy={verticalListSortingStrategy}
         >
-          {visibleTasks.map((task) => (
-            <TaskCard
+          {visibleTasks.map((task, index) => (
+            <Box
               key={task.id}
-              task={task}
-              onUpdate={onUpdate}
-              onDelete={onDelete}
-            />
+              className="task-card-animate"
+              sx={{ animationDelay: `${index * 0.04}s` }}
+            >
+              <TaskCard
+                task={task}
+                onUpdate={onUpdate}
+                onDelete={onDelete}
+              />
+            </Box>
           ))}
         </SortableContext>
 
@@ -147,13 +217,39 @@ export default function KanbanColumn({
           <Box
             sx={{
               display: "flex",
+              flexDirection: "column",
               alignItems: "center",
               justifyContent: "center",
-              height: 100,
+              height: 140,
               color: "text.disabled",
+              gap: 1,
             }}
           >
-            <Typography variant="body2">No tasks</Typography>
+            <Box
+              sx={{
+                width: 40,
+                height: 40,
+                borderRadius: "12px",
+                border: "2px dashed rgba(255, 255, 255, 0.08)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                color: "text.disabled",
+                fontSize: "1.2rem",
+              }}
+            >
+              +
+            </Box>
+            <Typography
+              variant="body2"
+              sx={{
+                color: "#475569",
+                fontSize: "0.8rem",
+                fontWeight: 500,
+              }}
+            >
+              No tasks yet
+            </Typography>
           </Box>
         )}
 
@@ -163,7 +259,18 @@ export default function KanbanColumn({
             size="small"
             fullWidth
             onClick={() => loadMoreForColumn(config.id)}
-            sx={{ mt: 1 }}
+            sx={{
+              mt: 1,
+              py: 0.8,
+              fontSize: "0.75rem",
+              color: "text.secondary",
+              borderRadius: "10px",
+              border: "1px dashed rgba(255, 255, 255, 0.08)",
+              "&:hover": {
+                bgcolor: "rgba(255, 255, 255, 0.04)",
+                borderColor: "rgba(255, 255, 255, 0.15)",
+              },
+            }}
           >
             Load more ({tasks.length - visibleCount} remaining)
           </Button>

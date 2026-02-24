@@ -78,9 +78,6 @@ export default function KanbanBoard() {
   );
 
   // Build a reverse lookup: task ID → column ID based on taskOrder arrays.
-  // If a task ID appears in a taskOrder array, that determines its visual column.
-  // This is what makes cross-column drag preview work without flicker —
-  // during drag-over we move the ID between order arrays, and the grouping follows.
   const orderColumnMap = useMemo(() => {
     const map = new Map<number, ColumnId>();
     for (const colId of Object.keys(taskOrder) as ColumnId[]) {
@@ -100,7 +97,6 @@ export default function KanbanBoard() {
       done: [],
     };
     for (const task of tasks) {
-      // If the task ID is in an order array, use that column; otherwise use API column
       const col = orderColumnMap.get(task.id) ?? task.column;
       if (grouped[col]) {
         grouped[col].push(task);
@@ -141,8 +137,6 @@ export default function KanbanBoard() {
   );
 
   // ---- DRAG OVER ----
-  // Live-moves the task ID between column order arrays so dnd-kit
-  // can animate the insertion preview in the target column.
   const handleDragOver = useCallback(
     (event: DragOverEvent) => {
       const { active, over } = event;
@@ -151,39 +145,28 @@ export default function KanbanBoard() {
       const activeId = active.id as number;
       const overId = over.id;
 
-      // Find which columns the active and over items are currently in
       const activeColumn = findColumnOfId(activeId, tasksByColumn);
       const overColumn = findColumnOfId(overId, tasksByColumn);
 
       if (!activeColumn || !overColumn) return;
-
-      // Only act when moving to a DIFFERENT column
       if (activeColumn === overColumn) return;
 
-      // Get current ID lists for both columns
       const sourceIds = tasksByColumn[activeColumn].map((t) => t.id);
       const destIds = tasksByColumn[overColumn].map((t) => t.id);
 
-      // Remove the active task from the source column
       const newSourceIds = sourceIds.filter((id) => id !== activeId);
 
-      // Determine insertion index in the destination column
       let insertIndex: number;
       if (typeof overId === "string" && COLUMNS.some((c) => c.id === overId)) {
-        // Dropping on the column droppable itself → append at end
         insertIndex = destIds.length;
       } else {
-        // Dropping on a specific task → insert at that task's position
         const overIndex = destIds.indexOf(overId as number);
         insertIndex = overIndex >= 0 ? overIndex : destIds.length;
       }
 
-      // Insert the active task into the destination column
       const newDestIds = [...destIds];
       newDestIds.splice(insertIndex, 0, activeId);
 
-      // Update both columns' orders — tasksByColumn will automatically
-      // pick up the change via orderColumnMap since the task ID moved
       setColumnOrder(activeColumn, newSourceIds);
       setColumnOrder(overColumn, newDestIds);
     },
@@ -200,10 +183,7 @@ export default function KanbanBoard() {
       dragSourceColumn.current = null;
 
       if (!over) {
-        // Drag cancelled — remove the task from any order arrays it was moved into
-        // so it goes back to its original column (derived from task.column)
         if (originalColumn) {
-          // Clear all order arrays to reset to API state
           const allColIds = Object.keys(taskOrder) as ColumnId[];
           for (const colId of allColIds) {
             const order = taskOrder[colId];
@@ -220,11 +200,9 @@ export default function KanbanBoard() {
 
       const activeId = active.id as number;
 
-      // Find which column the task is now in (after any handleDragOver moves)
       const currentColumn = findColumnOfId(activeId, tasksByColumn);
       if (!currentColumn) return;
 
-      // Handle same-column reorder (within the column the task is currently in)
       if (active.id !== over.id) {
         const currentIds = tasksByColumn[currentColumn].map((t) => t.id);
         const oldIndex = currentIds.indexOf(activeId);
@@ -236,7 +214,6 @@ export default function KanbanBoard() {
         }
       }
 
-      // If the task moved to a different column, persist via API
       if (originalColumn && currentColumn !== originalColumn) {
         moveTask({ id: activeId, column: currentColumn });
       }
@@ -271,21 +248,47 @@ export default function KanbanBoard() {
       <Box
         sx={{
           display: "flex",
+          flexDirection: "column",
           justifyContent: "center",
           alignItems: "center",
           height: 400,
+          gap: 2,
         }}
       >
-        <CircularProgress />
+        <CircularProgress
+          size={40}
+          thickness={3}
+          sx={{
+            color: "#818cf8",
+            "& .MuiCircularProgress-circle": {
+              strokeLinecap: "round",
+            },
+          }}
+        />
+        <Typography
+          variant="body2"
+          sx={{ color: "text.secondary", fontWeight: 500 }}
+        >
+          Loading your board…
+        </Typography>
       </Box>
     );
   }
 
   if (isError) {
     return (
-      <Alert severity="error" sx={{ m: 2 }}>
+      <Alert
+        severity="error"
+        sx={{
+          m: 3,
+          borderRadius: 3,
+          bgcolor: "rgba(248, 113, 113, 0.08)",
+          border: "1px solid rgba(248, 113, 113, 0.2)",
+          "& .MuiAlert-icon": { color: "#f87171" },
+        }}
+      >
         <Typography variant="subtitle2">Failed to load tasks</Typography>
-        <Typography variant="body2">
+        <Typography variant="body2" sx={{ color: "text.secondary" }}>
           {error?.message ?? "Unknown error"}. Make sure json-server is
           running on port 4000.
         </Typography>
@@ -305,10 +308,14 @@ export default function KanbanBoard() {
         <Box
           sx={{
             display: "flex",
-            gap: 2,
-            p: 2,
-            overflowX: "auto",
-            minHeight: "calc(100vh - 150px)",
+            flexDirection: { xs: "column", md: "row" },
+            gap: { xs: 2, md: 2.5 },
+            p: { xs: 1.5, sm: 2, md: 3 },
+            overflowX: { xs: "hidden", md: "auto" },
+            overflowY: { xs: "auto", md: "visible" },
+            minHeight: { xs: "auto", md: "calc(100vh - 80px)" },
+            alignItems: { xs: "stretch", md: "flex-start" },
+            pb: { xs: 4, md: 3 },
           }}
         >
           {COLUMNS.map((col) => (
@@ -324,13 +331,15 @@ export default function KanbanBoard() {
         </Box>
 
         {/* Drag overlay shows a ghost of the card being dragged */}
-        <DragOverlay>
+        <DragOverlay dropAnimation={null}>
           {activeTask ? (
-            <TaskCard
-              task={activeTask}
-              onUpdate={() => {}}
-              onDelete={() => {}}
-            />
+            <Box sx={{ transform: "rotate(2deg)", opacity: 0.92 }}>
+              <TaskCard
+                task={activeTask}
+                onUpdate={() => {}}
+                onDelete={() => {}}
+              />
+            </Box>
           ) : null}
         </DragOverlay>
       </DndContext>

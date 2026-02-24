@@ -26,10 +26,10 @@ export interface ColumnConfig {
  * All available columns with their display configuration.
  */
 export const COLUMNS: ColumnConfig[] = [
-  { id: "backlog", title: "Backlog", color: "#9e9e9e" },
-  { id: "in_progress", title: "In Progress", color: "#2196f3" },
-  { id: "review", title: "Review", color: "#ff9800" },
-  { id: "done", title: "Done", color: "#4caf50" },
+  { id: "backlog", title: "Backlog", color: "#94a3b8" },
+  { id: "in_progress", title: "In Progress", color: "#818cf8" },
+  { id: "review", title: "Review", color: "#f59e0b" },
+  { id: "done", title: "Done", color: "#34d399" },
 ];
 
 /** Number of tasks to load per page in each column */
