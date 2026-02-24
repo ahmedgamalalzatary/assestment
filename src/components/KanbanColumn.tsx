@@ -65,10 +65,9 @@ export default function KanbanColumn({
       elevation={0}
       className="kanban-column-animate"
       sx={{
-        flex: { xs: "none", md: 1 },
-        width: { xs: "100%", md: "auto" },
-        minWidth: { xs: "auto", md: 280, lg: 300 },
-        maxWidth: { xs: "100%", sm: "100%", md: 380 },
+        width: "100%",
+        minWidth: 0,
+        maxWidth: "100%",
         display: "flex",
         flexDirection: "column",
         bgcolor: isOver ? "rgba(255, 255, 255, 0.06)" : "rgba(255, 255, 255, 0.025)",
@@ -189,8 +188,8 @@ export default function KanbanColumn({
           px: { xs: 1, sm: 1.5 },
           pb: 1.5,
           pt: 0.5,
-          minHeight: { xs: 120, md: 200 },
-          maxHeight: { xs: "50vh", sm: "60vh", md: "calc(100vh - 220px)" },
+          minHeight: { xs: 120, md: 180 },
+          maxHeight: { xs: "50vh", md: "calc(100vh - 240px)" },
         }}
       >
         <SortableContext

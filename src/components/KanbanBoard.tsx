@@ -307,15 +307,21 @@ export default function KanbanBoard() {
       >
         <Box
           sx={{
-            display: "flex",
-            flexDirection: { xs: "column", md: "row" },
-            gap: { xs: 2, md: 2.5 },
-            p: { xs: 1.5, sm: 2, md: 3 },
-            overflowX: { xs: "hidden", md: "auto" },
-            overflowY: { xs: "auto", md: "visible" },
+            display: "grid",
+            gridTemplateColumns: {
+              xs: "1fr",                    // Mobile: single column
+              md: "1fr 1fr",               // Tablet (900–1310px): 2×2 grid
+              xl: "repeat(4, 1fr)",        // Desktop wide: 4 columns (xl = 1536px)
+            },
+            gap: { xs: 2, md: 2, lg: 2.5 },
+            p: { xs: 1.5, sm: 2, md: 2.5, lg: 3 },
             minHeight: { xs: "auto", md: "calc(100vh - 80px)" },
-            alignItems: { xs: "stretch", md: "flex-start" },
+            alignItems: "start",
             pb: { xs: 4, md: 3 },
+            // Custom breakpoint: switch to 4-col at 1310px
+            "@media (min-width: 1310px)": {
+              gridTemplateColumns: "repeat(4, 1fr)",
+            },
           }}
         >
           {COLUMNS.map((col) => (
