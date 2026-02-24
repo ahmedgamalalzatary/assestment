@@ -50,21 +50,21 @@ export default function TaskCard({ task, onUpdate, onDelete }: TaskCardProps) {
       <Card
         ref={setNodeRef}
         style={style}
+        {...attributes}
+        {...listeners}
         sx={{
           mb: 1,
           cursor: "grab",
           "&:hover": { boxShadow: 3 },
           position: "relative",
+          touchAction: "none",
         }}
       >
         <CardContent sx={{ p: 1.5, "&:last-child": { pb: 1.5 } }}>
           {/* Drag handle and title row */}
           <Box sx={{ display: "flex", alignItems: "flex-start", gap: 0.5 }}>
             <Box
-              {...attributes}
-              {...listeners}
               sx={{
-                cursor: "grab",
                 display: "flex",
                 alignItems: "center",
                 color: "text.secondary",

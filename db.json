@@ -70,7 +70,7 @@
       "id": "12",
       "title": "Review API documentation",
       "description": "Ensure Swagger docs are up to date",
-      "column": "backlog"
+      "column": "done"
     }
   ]
 }
