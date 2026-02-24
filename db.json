@@ -52,7 +52,7 @@
       "id": "9",
       "title": "Integrate third-party API",
       "description": "Connect to weather API for dashboard widget",
-      "column": "backlog"
+      "column": "review"
     },
     {
       "id": "10",
@@ -70,7 +70,7 @@
       "id": "12",
       "title": "Review API documentation",
       "description": "Ensure Swagger docs are up to date",
-      "column": "review"
+      "column": "backlog"
     }
   ]
 }

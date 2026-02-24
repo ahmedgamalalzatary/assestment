@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   fetchTasks,
@@ -13,16 +14,30 @@ const TASKS_KEY = ["tasks"] as const;
 /**
  * Custom hook providing React Query integration for task CRUD operations.
  * Includes optimistic updates for drag-and-drop moves.
+ * Search filtering is done client-side for reliability and instant results.
  */
 export function useTasks(search?: string) {
   const queryClient = useQueryClient();
 
-  // Fetch all tasks, optionally filtered by search term
+  // Always fetch all tasks — search filtering is done client-side
   const tasksQuery = useQuery<Task[]>({
-    queryKey: [...TASKS_KEY, search ?? ""],
-    queryFn: () => fetchTasks(search),
+    queryKey: TASKS_KEY,
+    queryFn: () => fetchTasks(),
     staleTime: 30_000, // Cache for 30 seconds
   });
+
+  // Client-side filtering by title or description
+  const filteredTasks = useMemo(() => {
+    const allTasks = tasksQuery.data ?? [];
+    if (!search) return allTasks;
+
+    const lowerSearch = search.toLowerCase();
+    return allTasks.filter(
+      (task) =>
+        task.title.toLowerCase().includes(lowerSearch) ||
+        task.description.toLowerCase().includes(lowerSearch)
+    );
+  }, [tasksQuery.data, search]);
 
   // Create a new task
   const createMutation = useMutation({
@@ -92,7 +107,7 @@ export function useTasks(search?: string) {
   });
 
   return {
-    tasks: tasksQuery.data ?? [],
+    tasks: filteredTasks,
     isLoading: tasksQuery.isLoading,
     isError: tasksQuery.isError,
     error: tasksQuery.error,
