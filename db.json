@@ -1,0 +1,76 @@
+{
+  "tasks": [
+    {
+      "id": "1",
+      "title": "Design homepage",
+      "description": "Include hero section and navigation bar",
+      "column": "done"
+    },
+    {
+      "id": "2",
+      "title": "Set up CI/CD pipeline",
+      "description": "Configure GitHub Actions for automated deployments",
+      "column": "done"
+    },
+    {
+      "id": "3",
+      "title": "Create user authentication",
+      "description": "Implement login and registration with JWT tokens",
+      "column": "review"
+    },
+    {
+      "id": "4",
+      "title": "Design database schema",
+      "description": "Define tables for users, tasks, and projects",
+      "column": "backlog"
+    },
+    {
+      "id": "5",
+      "title": "Write unit tests",
+      "description": "Add Jest tests for utility functions",
+      "column": "backlog"
+    },
+    {
+      "id": "6",
+      "title": "Implement REST API",
+      "description": "Create CRUD endpoints for task management",
+      "column": "in_progress"
+    },
+    {
+      "id": "7",
+      "title": "Build dashboard layout",
+      "description": "Create responsive grid layout with sidebar",
+      "column": "in_progress"
+    },
+    {
+      "id": "8",
+      "title": "Add form validation",
+      "description": "Validate inputs using Yup and Formik",
+      "column": "in_progress"
+    },
+    {
+      "id": "9",
+      "title": "Integrate third-party API",
+      "description": "Connect to weather API for dashboard widget",
+      "column": "backlog"
+    },
+    {
+      "id": "10",
+      "title": "Set up error handling",
+      "description": "Global error boundary and toast notifications",
+      "column": "done"
+    },
+    {
+      "id": "11",
+      "title": "Code review: auth module",
+      "description": "Review PR #42 for security best practices",
+      "column": "review"
+    },
+    {
+      "id": "12",
+      "title": "Review API documentation",
+      "description": "Ensure Swagger docs are up to date",
+      "column": "review"
+    }
+  ]
+}
