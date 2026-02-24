@@ -28,7 +28,7 @@
       "id": "5",
       "title": "Write unit tests",
       "description": "Add Jest tests for utility functions",
-      "column": "backlog"
+      "column": "in_progress"
     },
     {
       "id": "6",
@@ -46,7 +46,7 @@
       "id": "8",
       "title": "Add form validation",
       "description": "Validate inputs using Yup and Formik",
-      "column": "in_progress"
+      "column": "backlog"
     },
     {
       "id": "9",
@@ -70,7 +70,7 @@
       "id": "12",
       "title": "Review API documentation",
       "description": "Ensure Swagger docs are up to date",
-      "column": "done"
+      "column": "backlog"
     }
   ]
 }

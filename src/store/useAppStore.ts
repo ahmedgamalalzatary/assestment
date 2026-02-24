@@ -23,14 +23,6 @@ interface AppState {
   setColumnOrder: (columnId: string, orderedIds: number[]) => void;
   clearTaskOrder: () => void;
 
-  /**
-   * Temporary column overrides during a drag operation.
-   * Key = task ID, Value = column ID the task should appear in visually.
-   * This allows cross-column preview without changing the actual API data.
-   */
-  dragColumnOverrides: Record<number, string>;
-  setDragColumnOverride: (taskId: number, columnId: string) => void;
-  clearDragColumnOverrides: () => void;
 }
 
 export const useAppStore = create<AppState>((set) => ({
@@ -57,14 +49,4 @@ export const useAppStore = create<AppState>((set) => ({
       },
     })),
   clearTaskOrder: () => set({ taskOrder: {} }),
-
-  dragColumnOverrides: {},
-  setDragColumnOverride: (taskId, columnId) =>
-    set((state) => ({
-      dragColumnOverrides: {
-        ...state.dragColumnOverrides,
-        [taskId]: columnId,
-      },
-    })),
-  clearDragColumnOverrides: () => set({ dragColumnOverrides: {} }),
 }));
